@@ -1,4 +1,5 @@
 <template>
+  isPaused: store {{ store.state.isPaused }} local {{ isPaused }}
   <div ref="simulationArea"></div>
   <div>
     You can move left figure before start. Press "Q" to add figure to the left.
@@ -8,7 +9,7 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import SimulationToggleButton from "./SimulationToggleButton.vue";
 
@@ -23,16 +24,6 @@ export default {
     const width = 800;
     const height = 700;
     const plankWidth = width - 100;
-    const isPaused = ref(false);
-
-    const togglePause = () => {
-      const {
-        state: { figures },
-      } = store;
-
-      isPaused.value = !isPaused.value;
-      figures.forEach((f) => (f.isStatic = isPaused));
-    };
 
     const getRandomPlankX = (side) => {
       const plankOffset = 10;
@@ -56,7 +47,8 @@ export default {
     };
 
     const qHandler = ({ code }) => {
-      if (code === "KeyQ" && !isPaused.value) {
+      console.log(store.state.isPaused);
+      if (code === "KeyQ" && !store.state.isPaused) {
         addFigureToLeft();
       }
     };
@@ -99,7 +91,7 @@ export default {
 
       store.dispatch("initMatter", matterOptions);
       store.dispatch("rederBorders", 2);
-      store.dispatch("renderTiterTotter", {
+      store.dispatch("renderTeeterTotter", {
         plankWidth,
         plankHeight: 2,
         // should be 175 (sin 30 for hypotenuse 350, law of sines);
@@ -109,7 +101,7 @@ export default {
       store.dispatch("renderRandomFigure", getRandomPlankX("right"));
       store.dispatch("renderRandomFigure", getRandomPlankX("left"));
       store.dispatch("run");
-      togglePause();
+      store.dispatch("togglePause");
 
       document.addEventListener("keydown", qHandler);
       document.addEventListener("keydown", arrowHandler);
@@ -121,9 +113,10 @@ export default {
     });
 
     return {
-      isPaused,
+      store,
+      isPaused: computed(() => store.state.isPaused),
+      togglePause: () => store.dispatch("togglePause"),
       simulationArea,
-      togglePause,
       addFigureToLeft,
     };
   },

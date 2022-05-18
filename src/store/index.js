@@ -21,13 +21,14 @@ export default createStore({
       height: 0,
     },
     runner: null,
-    titerTotter: {
+    teeterTotter: {
       plank: null,
       base: null,
     },
     weightLeft: 0,
     weightRight: 0,
     figures: [],
+    isPaused: false,
   },
   getters: {},
   mutations: {
@@ -46,8 +47,8 @@ export default createStore({
     setRunner(state, runner) {
       state.runner = runner;
     },
-    setTiterTotter(state, titerTotter) {
-      state.titerTotter = titerTotter;
+    setTeeterTotter(state, teeterTotter) {
+      state.teeterTotter = teeterTotter;
     },
     addFigure(state, figure) {
       state.figures.push(figure);
@@ -57,6 +58,9 @@ export default createStore({
     },
     increaseRightWeight(state, weight) {
       state.weightRight += weight;
+    },
+    setPaused(state, isPaused) {
+      state.isPaused = isPaused;
     },
   },
   actions: {
@@ -106,7 +110,7 @@ export default createStore({
 
       World.add(state.world, borders);
     },
-    renderTiterTotter({ state, commit }, options) {
+    renderTeeterTotter({ state, commit }, options) {
       const { size } = state;
       const { plankWidth, plankHeight, baseHeight } = options;
       const plank = Bodies.rectangle(
@@ -206,6 +210,13 @@ export default createStore({
         x: x + xOffset,
         y,
       });
+    },
+    togglePause({ state, commit }) {
+      let { isPaused, figures } = state;
+      const toggledValue = !isPaused;
+
+      commit("setPaused", toggledValue);
+      figures.forEach((f) => (f.isStatic = toggledValue));
     },
     run({ state }) {
       Render.run(state.render);
