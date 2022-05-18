@@ -1,5 +1,4 @@
 <template>
-  isPaused: store {{ store.state.isPaused }} local {{ isPaused }}
   <div ref="simulationArea"></div>
   <div>
     You can move left figure before start. Press "Q" to add figure to the left.
