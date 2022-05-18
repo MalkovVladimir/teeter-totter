@@ -46,7 +46,6 @@ export default {
     };
 
     const qHandler = ({ code }) => {
-      console.log(store.state.isPaused);
       if (code === "KeyQ" && !store.state.isPaused) {
         addFigureToLeft();
       }
